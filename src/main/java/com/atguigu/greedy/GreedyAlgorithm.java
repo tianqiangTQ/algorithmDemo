@@ -3,6 +3,7 @@ package com.atguigu.greedy;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 public class GreedyAlgorithm {
 
@@ -18,17 +19,17 @@ public class GreedyAlgorithm {
         HashSet<String> hashSet2 = new HashSet<String>();
         hashSet2.add("广州");
         hashSet2.add("北京");
-        hashSet2.add("深圳");
+        hashSet2.add("上海");
 
         HashSet<String> hashSet3 = new HashSet<String>();
         hashSet3.add("成都");
-        hashSet3.add("上海");
+        hashSet3.add("广州");
         hashSet3.add("杭州");
 
 
         HashSet<String> hashSet4 = new HashSet<String>();
-        hashSet4.add("上海");
-        hashSet4.add("天津");
+        hashSet4.add("广州");
+        hashSet4.add("杭州");
 
         HashSet<String> hashSet5 = new HashSet<String>();
         hashSet5.add("杭州");
@@ -47,7 +48,7 @@ public class GreedyAlgorithm {
         allAreas.add("上海");
         allAreas.add("天津");
         allAreas.add("广州");
-        allAreas.add("深圳");
+//        allAreas.add("深圳");
         allAreas.add("成都");
         allAreas.add("杭州");
         allAreas.add("大连");
@@ -57,6 +58,7 @@ public class GreedyAlgorithm {
 
         //定义一个临时的集合， 在遍历的过程中，存放遍历过程中的电台覆盖的地区和当前还没有覆盖的地区的交集
         HashSet<String> tempSet = new HashSet<String>();
+        Map<String, HashSet<String>> tempMap = new HashMap<>();
 
         //定义给maxKey ， 保存在一次遍历过程中，能够覆盖最大未覆盖的地区对应的电台的key
         //如果maxKey 不为null , 则会加入到 selects
@@ -64,6 +66,7 @@ public class GreedyAlgorithm {
         while (allAreas.size() != 0) { // 如果allAreas 不为0, 则表示还没有覆盖到所有的地区
             //每进行一次while,需要
             maxKey = null;
+            tempMap.clear();
 
             //遍历 broadcasts, 取出对应key
             for (String key : broadcasts.keySet()) {
@@ -74,11 +77,12 @@ public class GreedyAlgorithm {
                 tempSet.addAll(areas);
                 //求出tempSet 和   allAreas 集合的交集, 交集会赋给 tempSet
                 tempSet.retainAll(allAreas);
+                tempMap.put(key, new HashSet<>(tempSet));
                 //如果当前这个集合包含的未覆盖地区的数量，比maxKey指向的集合地区还多
                 //就需要重置maxKey
                 // tempSet.size() >broadcasts.get(maxKey).size()) 体现出贪心算法的特点,每次都选择最优的
                 if (tempSet.size() > 0 &&
-                        (maxKey == null || tempSet.size() > broadcasts.get(maxKey).size())) {
+                        (maxKey == null || tempSet.size() > tempMap.get(maxKey).size())) {
                     maxKey = key;
                 }
             }

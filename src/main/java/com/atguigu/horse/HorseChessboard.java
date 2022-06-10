@@ -6,26 +6,26 @@ import java.util.Comparator;
 
 public class HorseChessboard {
 
-    private static int X; // 棋盘的列数
-    private static int Y; // 棋盘的行数
+    // 统一说明：棋盘左上为原点，x为横坐标，y为纵坐标
+
+    private static final int X = 8; // 棋盘的列数
+    private static final int Y = 8; // 棋盘的行数
     //创建一个数组，标记棋盘的各个位置是否被访问过
-    private static boolean visited[];
+    private static boolean[] visited;
     //使用一个属性，标记是否棋盘的所有位置都被访问
     private static boolean finished; // 如果为true,表示成功
 
     public static void main(String[] args) {
         System.out.println("骑士周游算法，开始运行~~");
         //测试骑士周游算法是否正确
-        X = 8;
-        Y = 8;
         int row = 1; //马儿初始位置的行，从1开始编号
         int column = 1; //马儿初始位置的列，从1开始编号
         //创建棋盘
-        int[][] chessboard = new int[X][Y];
+        int[][] chessboard = new int[Y][X];
         visited = new boolean[X * Y];//初始值都是false
         //测试一下耗时
         long start = System.currentTimeMillis();
-        traversalChessboard(chessboard, row - 1, column - 1, 1);
+        traversalChessboard(chessboard, column - 1, row - 1, 1);
         long end = System.currentTimeMillis();
         System.out.println("共耗时: " + (end - start) + " 毫秒");
 
@@ -42,24 +42,23 @@ public class HorseChessboard {
      * 完成骑士周游问题的算法
      *
      * @param chessboard 棋盘
-     * @param row        马儿当前的位置的行 从0开始
-     * @param column     马儿当前的位置的列  从0开始
+     * @param x          马儿当前的位置的x  从0开始
+     * @param y          马儿当前的位置的y 从0开始
      * @param step       是第几步 ,初始位置就是第1步
      */
-    public static void traversalChessboard(int[][] chessboard, int row, int column, int step) {
-        chessboard[row][column] = step;
-        //row = 4 X = 8 column = 4 = 4 * 8 + 4 = 36
-        visited[row * X + column] = true; //标记该位置已经访问
+    public static void traversalChessboard(int[][] chessboard, int x, int y, int step) {
+        chessboard[y][x] = step;
+        visited[y * X + x] = true; //标记该位置已经访问
         //获取当前位置可以走的下一个位置的集合 
-        ArrayList<Point> ps = next(new Point(column, row));
+        ArrayList<Point> ps = next(new Point(x, y));
         //对ps进行排序,排序的规则就是对ps的所有的Point对象的下一步的位置的数目，进行非递减排序
-        sort(ps);
+//        sort(ps);
         //遍历 ps
         while (!ps.isEmpty()) {
             Point p = ps.remove(0);//取出下一个可以走的位置
             //判断该点是否已经访问过
             if (!visited[p.y * X + p.x]) {//说明还没有访问过
-                traversalChessboard(chessboard, p.y, p.x, step + 1);
+                traversalChessboard(chessboard, p.x, p.y, step + 1);
             }
         }
         //判断马儿是否完成了任务，使用   step 和应该走的步数比较 ， 
@@ -68,8 +67,8 @@ public class HorseChessboard {
         //1. 棋盘到目前位置,仍然没有走完
         //2. 棋盘处于一个回溯过程
         if (step < X * Y && !finished) {
-            chessboard[row][column] = 0;
-            visited[row * X + column] = false;
+            chessboard[y][x] = 0;
+            visited[y * X + x] = false;
         } else {
             finished = true;
         }
@@ -78,13 +77,10 @@ public class HorseChessboard {
 
     /**
      * 功能： 根据当前位置(Point对象)，计算马儿还能走哪些位置(Point)，并放入到一个集合中(ArrayList), 最多有8个位置
-     *
-     * @param curPoint
-     * @return
      */
     public static ArrayList<Point> next(Point curPoint) {
         //创建一个ArrayList
-        ArrayList<Point> ps = new ArrayList<Point>();
+        ArrayList<Point> ps = new ArrayList<>();
         //创建一个Point
         Point p1 = new Point();
         //表示马儿可以走5这个位置
